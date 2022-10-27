@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class IUserImpl implements IUser {
@@ -20,10 +21,11 @@ public class IUserImpl implements IUser {
     @Autowired
     private UserRepository userRepository;
 
+
     @Override
     public List<UserDTO> findAll() {
         List<UserDTO> listUserDTO = new ArrayList<>();
-        List<UserEntity> listUserEntity = new ArrayList<>();
+        List<UserEntity> listUserEntity = userRepository.findAll();
         for (UserEntity userEntity: listUserEntity) {
             UserDTO userDTO = userConverter.toDTO(userEntity);
             listUserDTO.add(userDTO);
@@ -33,16 +35,29 @@ public class IUserImpl implements IUser {
 
     @Override
     public UserDTO findUserById(long id) {
-        return userConverter.toDTO(userRepository.findById(id));
+        UserEntity userEntity = userRepository.getOne(id);
+        return userConverter.toDTO(userEntity);
     }
 
     @Override
     public UserDTO save(UserDTO userDTO) {
-        return null;
+        UserEntity userEntity = new UserEntity();
+        if(userDTO.getId()!= null){
+            UserEntity oldUserEntity = userRepository.getOne(userDTO.getId());
+            userEntity = userConverter.toEntity(userDTO, oldUserEntity);
+            System.out.print("update");
+        }else {
+            userEntity = userConverter.toEntity(userDTO);
+            System.out.println("insert");
+        }
+        userEntity =userRepository.save(userEntity);
+        return userConverter.toDTO(userEntity);
     }
 
     @Override
     public void delete(long[] ids) {
-
+        for (long id: ids) {
+            userRepository.deleteById(id);
+        }
     }
 }
