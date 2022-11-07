@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -37,7 +38,7 @@ public class UserController {
     UserConverter userConverter;
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody UserDTO signupUser) throws Exception {
+    public ResponseEntity<?> registerUser(@RequestBody @Valid UserDTO signupUser) throws Exception {
         return ResponseEntity.ok(iUserService.save(signupUser));
     }
 
@@ -52,7 +53,7 @@ public class UserController {
     }
 
     @PutMapping("/user/{id}")
-    public ResponseEntity<?> updateUser(@RequestBody UserDTO user, @PathVariable("id") long id){
+    public ResponseEntity<?> updateUser(@RequestBody @Valid UserDTO user, @PathVariable("id") long id){
         user.setId(id);
         return ResponseEntity.ok(iUserService.save(user));
     }
